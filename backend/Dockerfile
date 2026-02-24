@@ -1,32 +1,25 @@
-# Build stage
-FROM maven:3.9-eclipse-temurin-21 as builder
+## Build stage
+FROM maven:3.9-eclipse-temurin-21-alpine AS builder
 
 WORKDIR /app
 
 COPY pom.xml .
-RUN mvn dependency:go-offline
+RUN mvn -q -e -B dependency:go-offline
 
 COPY src ./src
 
-RUN mvn clean package -DskipTests
+RUN mvn -q -e -B clean package -DskipTests
 
-# Runtime stage
-FROM eclipse-temurin:21-jre
+## Runtime stage
+FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-# Copy the built JAR from builder
-COPY --from=builder /app/target/*.jar app.jar
+ENV JAVA_OPTS=""
 
-# Create uploads directory
-RUN mkdir -p /app/uploads/documents
+COPY --from=builder /app/target/profile-hub-backend-1.0.0.jar app.jar
 
-# Expose port
 EXPOSE 8080
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8080/api/health || exit 1
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
 
-# Run application
-ENTRYPOINT ["java", "-jar", "app.jar"]

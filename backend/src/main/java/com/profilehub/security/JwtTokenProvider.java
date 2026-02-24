@@ -54,17 +54,19 @@ public class JwtTokenProvider {
 
     public Long getUserIdFromToken(String token) {
         Claims claims = Jwts.parser()
-            .setSigningKey(getSigningKey())
-            .parseClaimsJws(token)
-            .getBody();
+            .signingKey(getSigningKey())
+            .build()
+            .parseSignedClaims(token)
+            .getPayload();
         return Long.parseLong(claims.getSubject());
     }
 
     public boolean validateToken(String authToken) {
         try {
             Jwts.parser()
-                    .setSigningKey(getSigningKey())
-                    .parseClaimsJws(authToken);
+                    .signingKey(getSigningKey())
+                    .build()
+                    .parseSignedClaims(authToken);
             return true;
         } catch (Exception ex) {
             log.error("JWT validation error: {}", ex.getMessage());
