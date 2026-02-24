@@ -27,7 +27,9 @@ interface AuthResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/auth';
+  // TODO: ajuste esta URL para o endereço público do seu backend no Render
+  // Exemplo: https://profile-hub-backend.onrender.com/api/auth
+  private apiUrl = 'https://profile-hub-1hs4.onrender.com/api/auth';
 
   constructor(
     private http: HttpClient,
