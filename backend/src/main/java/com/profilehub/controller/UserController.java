@@ -13,7 +13,6 @@ import com.profilehub.service.UserService;
 @Slf4j
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:3000", "https://profile-hub-theta.vercel.app"})
 public class UserController {
 
     @Autowired

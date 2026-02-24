@@ -18,7 +18,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/documents")
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:3000", "https://profile-hub-theta.vercel.app"})
 public class DocumentController {
 
     @Autowired
