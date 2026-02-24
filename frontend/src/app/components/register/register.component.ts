@@ -217,6 +217,16 @@ import { StorageService } from '../../services/storage.service';
     .login-link a:hover {
       text-decoration: underline;
     }
+
+    @media (max-width: 480px) {
+      .register-card {
+        padding: 24px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
   `]
 })
 export class RegisterComponent {

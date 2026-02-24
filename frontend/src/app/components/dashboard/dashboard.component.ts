@@ -148,6 +148,16 @@ import { UserService } from '../../services/user.service';
       font-weight: bold;
       font-size: 16px;
     }
+
+    @media (max-width: 480px) {
+      .dashboard-container {
+        padding: 20px 16px;
+      }
+
+      .dashboard-header h1 {
+        font-size: 24px;
+      }
+    }
   `]
 })
 export class DashboardComponent implements OnInit {

@@ -219,6 +219,16 @@ import { DocumentService } from '../../services/document.service';
       opacity: 0.6;
       cursor: not-allowed;
     }
+
+    @media (max-width: 480px) {
+      .upload-card {
+        padding: 24px;
+      }
+
+      .file-input-wrapper {
+        padding: 24px;
+      }
+    }
   `]
 })
 export class DocumentUploadComponent {

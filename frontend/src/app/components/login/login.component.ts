@@ -166,6 +166,12 @@ import { StorageService } from '../../services/storage.service';
     .signup-link a:hover {
       text-decoration: underline;
     }
+
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 24px;
+      }
+    }
   `]
 })
 export class LoginComponent {
