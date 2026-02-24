@@ -1,0 +1,146 @@
+### ProfileHub API - Exemplos de Requisições
+
+### Variáveis
+@baseUrl = http://localhost:8080/api
+@token = 
+
+### ===== AUTENTICAÇÃO =====
+
+### Registrar novo usuário
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "novo@example.com",
+  "username": "novo_usuario",
+  "password": "SenhaForte123!",
+  "firstName": "João",
+  "lastName": "Silva"
+}
+
+### Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "novo@example.com",
+  "password": "SenhaForte123!"
+}
+
+### Health Check
+GET {{baseUrl}}/health
+
+### ===== USUÁRIOS =====
+
+### Obter usuário atual
+GET {{baseUrl}}/users/me
+Authorization: Bearer {{token}}
+
+### Obter usuário por ID
+GET {{baseUrl}}/users/1
+Authorization: Bearer {{token}}
+
+### Atualizar perfil de usuário
+PUT {{baseUrl}}/users/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "firstName": "João",
+  "lastName": "Silva",
+  "bio": "Desenvolvedor fullstack",
+  "profilePictureUrl": "https://example.com/image.jpg"
+}
+
+### Alterar senha
+POST {{baseUrl}}/users/1/change-password?oldPassword=SenhaForte123!&newPassword=NovaSenha456!
+Authorization: Bearer {{token}}
+
+### Deletar usuário
+DELETE {{baseUrl}}/users/1
+Authorization: Bearer {{token}}
+
+### ===== DOCUMENTOS =====
+
+### Upload de documento (usando arquivo de teste)
+POST {{baseUrl}}/documents/upload
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="documento.pdf"
+Content-Type: application/pdf
+
+< ./documents/sample.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="description"
+
+Documento importante para análise
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="isPublic"
+
+false
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Obter documento
+GET {{baseUrl}}/documents/1
+Authorization: Bearer {{token}}
+
+### Listar documentos do usuário
+GET {{baseUrl}}/documents/user/documents
+Authorization: Bearer {{token}}
+
+### Listar documentos do usuário (paginado)
+GET {{baseUrl}}/documents/user/documents/paginated?page=0&size=10
+Authorization: Bearer {{token}}
+
+### Listar documentos públicos
+GET {{baseUrl}}/documents/public?page=0&size=10
+
+### Atualizar documento
+PUT {{baseUrl}}/documents/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "description": "Descrição atualizada",
+  "isPublic": true
+}
+
+### Deletar documento
+DELETE {{baseUrl}}/documents/1
+Authorization: Bearer {{token}}
+
+### ===== CASOS DE ERRO =====
+
+### Login com email inválido
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "inexistente@example.com",
+  "password": "senhaqualquer"
+}
+
+### Registro com email já existente
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "novo@example.com",
+  "username": "outro_usuario",
+  "password": "SenhaForte123!",
+  "firstName": "Maria",
+  "lastName": "Santos"
+}
+
+### Acesso sem token
+GET {{baseUrl}}/users/me
+
+### Token inválido
+GET {{baseUrl}}/users/me
+Authorization: Bearer token_invalido
+
+### Documento que não pertence ao usuário
+DELETE {{baseUrl}}/documents/999
+Authorization: Bearer {{token}}

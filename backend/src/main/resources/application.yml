@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: ProfileHub-Backend
+  
+  datasource:
+    url: jdbc:postgresql://postgres:5432/profilehub
+    username: profilehub_user
+    password: profilehub_password
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        'format_sql': true
+        jdbc:
+          'batch_size': 20
+          'fetch_size': 50
+  
+  data:
+    redis:
+      host: redis
+      port: 6379
+      timeout: 2000ms
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+app:
+  jwtSecret: ${JWT_SECRET:your-super-secret-key-change-this-in-production-environment-with-at-least-32-characters}
+  jwtExpirationMs: 86400000
+
+logging:
+  level:
+    root: INFO
+    'com.profilehub': DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
