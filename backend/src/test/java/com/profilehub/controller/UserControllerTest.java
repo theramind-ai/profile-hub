@@ -27,8 +27,8 @@ class UserControllerTest {
     @Test
     void getCurrentUser_ReturnsUserResponse() {
         UserResponse userResponse = UserResponse.builder().id(1L).username("user").build();
-        when(userService.getCurrentUser()).thenReturn(userResponse);
-        ResponseEntity<UserResponse> response = userController.getCurrentUser();
+        when(userService.getUserById(1L)).thenReturn(userResponse);
+        ResponseEntity<UserResponse> response = userController.getCurrentUser(null);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("user", response.getBody().getUsername());
     }
