@@ -14,7 +14,7 @@ import com.profilehub.service.AuthService;
 @Slf4j
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:3000"})
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:3000", "https://profile-hub-theta.vercel.app"})
 public class AuthController {
 
     @Autowired
