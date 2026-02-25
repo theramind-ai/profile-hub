@@ -15,15 +15,21 @@ import javax.crypto.SecretKey;
 @Component
 public class JwtTokenProvider {
 
-    @Value("${app.jwtSecret:your-secret-key-change-this-in-production-environment}")
+    @Value("${app.jwtSecret:bnRkLTI4YzQwZjIzZWUzYzc0MTQzZjQ5ZTkxODJiZGQ5ZjM1YWFmODAwMTUxNTY3NGFjOWQ0NDAzZDZjNzAz}")
     private String jwtSecret;
 
     @Value("${app.jwtExpirationMs:86400000}")
     private int jwtExpirationMs;
 
     private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
-        return Keys.hmacShaKeyFor(keyBytes);
+        try {
+            log.debug("JWT Secret length: {}", jwtSecret != null ? jwtSecret.length() : 0);
+            byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
+            return Keys.hmacShaKeyFor(keyBytes);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid JWT Secret - must be valid Base64: {}", e.getMessage());
+            throw new RuntimeException("JWT_SECRET environment variable is not set or invalid. Set a valid Base64 string.", e);
+        }
     }
 
     public String generateToken(Authentication authentication) {
