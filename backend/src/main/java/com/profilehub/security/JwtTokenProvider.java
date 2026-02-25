@@ -15,7 +15,7 @@ import javax.crypto.SecretKey;
 @Component
 public class JwtTokenProvider {
 
-    @Value("${app.jwtSecret:eW91ci1zZWNyZXQta2V5LWNoYW5nZS10aGlzLWluLXByb2R1Y3Rpb24tMTIzNDU2Nzg5MA==}")
+    @Value("${app.jwtSecret:TXlWZXJ5U2VjdXJlSldUU2VjcmV0S2V5MzJCeXRlc0xvbmdGb3JQcm9kdWN0aW9uVXNl}")
     private String jwtSecret;
 
     @Value("${app.jwtExpirationMs:86400000}")
