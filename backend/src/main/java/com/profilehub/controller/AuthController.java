@@ -13,7 +13,7 @@ import com.profilehub.service.AuthService;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
     @Autowired

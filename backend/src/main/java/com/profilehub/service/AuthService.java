@@ -64,38 +64,53 @@ public class AuthService {
     }
 
     public AuthResponse register(RegisterRequest registerRequest) {
-        // Check if user already exists
-        if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new ApiException("Email already registered", 400);
+        try {
+            log.info("Starting registration for email: {}", registerRequest.getEmail());
+            
+            // Check if user already exists
+            if (userRepository.existsByEmail(registerRequest.getEmail())) {
+                log.warn("Email already registered: {}", registerRequest.getEmail());
+                throw new ApiException("Email already registered", 400);
+            }
+
+            if (userRepository.existsByUsername(registerRequest.getUsername())) {
+                log.warn("Username already taken: {}", registerRequest.getUsername());
+                throw new ApiException("Username already taken", 400);
+            }
+
+            log.debug("Creating new user: email={}, username={}", registerRequest.getEmail(), registerRequest.getUsername());
+            
+            // Create new user
+            User user = User.builder()
+                    .email(registerRequest.getEmail())
+                    .username(registerRequest.getUsername())
+                    .password(passwordEncoder.encode(registerRequest.getPassword()))
+                    .firstName(registerRequest.getFirstName())
+                    .lastName(registerRequest.getLastName())
+                    .role(Role.USER)
+                    .isActive(true)
+                    .build();
+
+            user = userRepository.save(user);
+            log.info("New user registered: {}", user.getEmail());
+
+            log.debug("Generating JWT token for user: {}", user.getId());
+            String token = tokenProvider.generateTokenFromId(user.getId());
+            UserResponse userResponse = mapUserToResponse(user);
+
+            return AuthResponse.builder()
+                    .token(token)
+                    .tokenType("Bearer")
+                    .expiresIn(tokenProvider.getExpirationTime())
+                    .user(userResponse)
+                    .build();
+        } catch (ApiException e) {
+            log.error("Registration failed with API exception: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("Registration failed with unexpected error", e);
+            throw new ApiException("Registration failed: " + e.getMessage(), 500);
         }
-
-        if (userRepository.existsByUsername(registerRequest.getUsername())) {
-            throw new ApiException("Username already taken", 400);
-        }
-
-        // Create new user
-        User user = User.builder()
-                .email(registerRequest.getEmail())
-                .username(registerRequest.getUsername())
-                .password(passwordEncoder.encode(registerRequest.getPassword()))
-                .firstName(registerRequest.getFirstName())
-                .lastName(registerRequest.getLastName())
-                .role(Role.USER)
-                .isActive(true)
-                .build();
-
-        user = userRepository.save(user);
-        log.info("New user registered: {}", user.getEmail());
-
-        String token = tokenProvider.generateTokenFromId(user.getId());
-        UserResponse userResponse = mapUserToResponse(user);
-
-        return AuthResponse.builder()
-                .token(token)
-                .tokenType("Bearer")
-                .expiresIn(tokenProvider.getExpirationTime())
-                .user(userResponse)
-                .build();
     }
 
     private UserResponse mapUserToResponse(User user) {

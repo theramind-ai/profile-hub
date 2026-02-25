@@ -12,7 +12,7 @@ import com.profilehub.service.UserService;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
