@@ -31,7 +31,7 @@ server:
     context-path: /api
 
 app:
-  jwtSecret: ${JWT_SECRET:your-super-secret-key-change-this-in-production-environment-with-at-least-32-characters}
+  jwtSecret: ${JWT_SECRET:TXlWZXJ5U2VjdXJlSldUU2VjcmV0S2V5MzJCeXRlc0xvbmdGb3JQcm9kdWN0aW9uVXNl}
   jwtExpirationMs: 86400000
 
 logging:

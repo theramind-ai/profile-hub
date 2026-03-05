@@ -30,7 +30,7 @@ services:
     container_name: profilehub-backend
     environment:
       # Opcional: sobrescrever segredo JWT em produção
-      - JWT_SECRET=${JWT_SECRET:-your-super-secret-key-change-this-in-production-environment-with-at-least-32-characters}
+      - JWT_SECRET=${JWT_SECRET:-TXlWZXJ5U2VjdXJlSldUU2VjcmV0S2V5MzJCeXRlc0xvbmdGb3JQcm9kdWN0aW9uVXNl}
     depends_on:
       - postgres
       - redis
@@ -57,4 +57,5 @@ networks:
 
 volumes:
   postgres-data:
+
 

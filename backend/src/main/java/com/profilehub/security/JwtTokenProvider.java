@@ -1,9 +1,13 @@
 package com.profilehub.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -15,20 +19,20 @@ import javax.crypto.SecretKey;
 @Component
 public class JwtTokenProvider {
 
-    @Value("${app.jwtSecret:TXlWZXJ5U2VjdXJlSldUU2VjcmV0S2V5MzJCeXRlc0xvbmdGb3JQcm9kdWN0aW9uVXNl}")
+    @Value("${app.jwtSecret}")
     private String jwtSecret;
 
     @Value("${app.jwtExpirationMs:86400000}")
-    private int jwtExpirationMs;
+    private long jwtExpirationMs;
 
     private SecretKey getSigningKey() {
         try {
-            log.debug("JWT Secret length: {}", jwtSecret != null ? jwtSecret.length() : 0);
             byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
             return Keys.hmacShaKeyFor(keyBytes);
         } catch (IllegalArgumentException e) {
             log.error("Invalid JWT Secret - must be valid Base64: {}", e.getMessage());
-            throw new RuntimeException("JWT_SECRET environment variable is not set or invalid. Set a valid Base64 string.", e);
+            throw new RuntimeException(
+                    "JWT_SECRET environment variable is not set or invalid. Set a valid Base64 string.", e);
         }
     }
 
@@ -39,11 +43,11 @@ public class JwtTokenProvider {
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
 
         return Jwts.builder()
-            .subject(userPrincipal.getId().toString())
-            .issuedAt(now)
-            .expiration(expiryDate)
-            .signWith(getSigningKey())
-            .compact();
+                .subject(userPrincipal.getId().toString())
+                .issuedAt(now)
+                .expiration(expiryDate)
+                .signWith(getSigningKey())
+                .compact();
     }
 
     public String generateTokenFromId(Long userId) {
@@ -51,31 +55,39 @@ public class JwtTokenProvider {
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
 
         return Jwts.builder()
-            .subject(userId.toString())
-            .issuedAt(now)
-            .expiration(expiryDate)
-            .signWith(getSigningKey())
-            .compact();
+                .subject(userId.toString())
+                .issuedAt(now)
+                .expiration(expiryDate)
+                .signWith(getSigningKey())
+                .compact();
     }
 
     public Long getUserIdFromToken(String token) {
         Claims claims = Jwts.parser()
-            .setSigningKey(getSigningKey())
-            .build()
-            .parseClaimsJws(token)
-            .getBody();
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
         return Long.parseLong(claims.getSubject());
     }
 
     public boolean validateToken(String authToken) {
         try {
             Jwts.parser()
-                    .setSigningKey(getSigningKey())
+                    .verifyWith(getSigningKey())
                     .build()
-                    .parseClaimsJws(authToken);
+                    .parseSignedClaims(authToken);
             return true;
-        } catch (Exception ex) {
-            log.error("JWT validation error: {}", ex.getMessage());
+        } catch (SignatureException ex) {
+            log.error("Invalid JWT signature: {}", ex.getMessage());
+        } catch (MalformedJwtException ex) {
+            log.error("Malformed JWT token: {}", ex.getMessage());
+        } catch (ExpiredJwtException ex) {
+            log.error("Expired JWT token: {}", ex.getMessage());
+        } catch (UnsupportedJwtException ex) {
+            log.error("Unsupported JWT token: {}", ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            log.error("JWT claims string is empty: {}", ex.getMessage());
         }
         return false;
     }
