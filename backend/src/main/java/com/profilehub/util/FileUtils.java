@@ -57,4 +57,17 @@ public class FileUtils {
         String extension = getFileExtension(fileName).toLowerCase();
         return extension.matches("(pdf|doc|docx|xlsx|xls|ppt|pptx|jpg|jpeg|png|gif|zip|rar|txt)");
     }
+
+    public static byte[] readFile(String filePath) {
+        try {
+            Path path = Paths.get(filePath);
+            if (Files.exists(path)) {
+                return Files.readAllBytes(path);
+            }
+            throw new RuntimeException("File not found: " + filePath);
+        } catch (Exception e) {
+            log.error("Error reading file: {}", e.getMessage());
+            throw new RuntimeException("Failed to read file", e);
+        }
+    }
 }

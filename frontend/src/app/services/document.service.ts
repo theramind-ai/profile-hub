@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class DocumentService {
   private apiUrl = 'https://profile-hub-1hs4.onrender.com/api/documents';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   uploadDocument(file: File, description?: string, isPublic?: boolean): Observable<any> {
     const formData = new FormData();
@@ -51,5 +51,11 @@ export class DocumentService {
 
   deleteDocument(documentId: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${documentId}`);
+  }
+
+  downloadDocument(documentId: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/download/${documentId}`, {
+      responseType: 'blob'
+    });
   }
 }

@@ -132,6 +132,19 @@ public class DocumentService {
         log.info("Document deleted: {}", documentId);
     }
 
+    @SuppressWarnings("null")
+    public byte[] downloadDocument(Long documentId, Long userId) {
+        Document document = documentRepository.findById(documentId)
+                .orElseThrow(() -> new ApiException("Document not found", 404));
+
+        // Check if document belongs to user or is public
+        if (!document.getUser().getId().equals(userId) && !document.getIsPublic()) {
+            throw new ApiException("Unauthorized access to document", 403);
+        }
+
+        return FileUtils.readFile(document.getFileUrl());
+    }
+
     private DocumentResponse mapDocumentToResponse(Document document) {
         return DocumentResponse.builder()
                 .id(document.getId())

@@ -13,6 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.profilehub.dto.DocumentResponse;
 import com.profilehub.entity.Document;
 import com.profilehub.service.DocumentService;
+import com.profilehub.repository.DocumentRepository;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import java.util.List;
 
 @Slf4j
@@ -22,6 +25,9 @@ public class DocumentController {
 
     @Autowired
     private DocumentService documentService;
+
+    @Autowired
+    private DocumentRepository documentRepository;
 
     @PostMapping("/upload")
     public ResponseEntity<DocumentResponse> uploadDocument(
@@ -101,6 +107,25 @@ public class DocumentController {
         Long userId = extractUserIdFromAuth(authentication);
         documentService.deleteDocument(documentId, userId);
         return ResponseEntity.ok("Document deleted successfully");
+    }
+
+    @SuppressWarnings("null")
+    @GetMapping("/download/{documentId}")
+    public ResponseEntity<byte[]> downloadDocument(
+            @PathVariable Long documentId,
+            Authentication authentication) {
+        log.info("Downloading document: {}", documentId);
+
+        Long userId = extractUserIdFromAuth(authentication);
+        Document document = documentRepository.findById(documentId)
+                .orElseThrow(() -> new RuntimeException("Document not found"));
+
+        byte[] content = documentService.downloadDocument(documentId, userId);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getFileName() + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(content);
     }
 
     private Long extractUserIdFromAuth(Authentication authentication) {

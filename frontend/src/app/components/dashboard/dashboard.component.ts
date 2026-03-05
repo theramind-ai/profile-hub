@@ -165,10 +165,12 @@ export class DashboardComponent implements OnInit {
   documentCount: number | null = null;
   joinDate = '';
 
+  private router = inject(Router);
+
   constructor(
     private userService: UserService,
     private documentService: DocumentService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadUserData();
@@ -198,18 +200,18 @@ export class DashboardComponent implements OnInit {
   }
 
   goToProfile(): void {
-    // Navigate to profile component
+    this.router.navigate(['/profile']);
   }
 
   goToDocuments(): void {
-    // Navigate to documents component
+    this.router.navigate(['/documents']);
   }
 
   goToUpload(): void {
-    // Navigate to upload component
+    this.router.navigate(['/upload']);
   }
 
   goToGallery(): void {
-    // Navigate to gallery component
+    this.router.navigate(['/gallery']);
   }
 }
