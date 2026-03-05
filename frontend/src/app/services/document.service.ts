@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class DocumentService {
-  private apiUrl = 'http://localhost:8080/api/documents';
+  private apiUrl = 'https://profile-hub-1hs4.onrender.com/api/documents';
 
   constructor(private http: HttpClient) {}
 

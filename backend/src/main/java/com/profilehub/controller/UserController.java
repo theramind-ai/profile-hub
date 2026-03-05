@@ -22,7 +22,7 @@ public class UserController {
     public ResponseEntity<UserResponse> getCurrentUser(Authentication authentication) {
         String email = authentication.getName();
         log.info("Getting current user: {}", email);
-        
+
         // Extract userId from SecurityContext
         Long userId = extractUserIdFromAuth(authentication);
         UserResponse userResponse = userService.getUserById(userId);
@@ -42,7 +42,7 @@ public class UserController {
             @RequestBody User userDetails,
             Authentication authentication) {
         log.info("Updating user: {}", userId);
-        
+
         Long authenticatedUserId = extractUserIdFromAuth(authentication);
         if (!userId.equals(authenticatedUserId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -59,7 +59,7 @@ public class UserController {
             @RequestParam String newPassword,
             Authentication authentication) {
         log.info("Changing password for user: {}", userId);
-        
+
         Long authenticatedUserId = extractUserIdFromAuth(authentication);
         if (!userId.equals(authenticatedUserId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -74,7 +74,7 @@ public class UserController {
             @PathVariable Long userId,
             Authentication authentication) {
         log.info("Deleting user: {}", userId);
-        
+
         Long authenticatedUserId = extractUserIdFromAuth(authentication);
         if (!userId.equals(authenticatedUserId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -85,7 +85,8 @@ public class UserController {
     }
 
     private Long extractUserIdFromAuth(Authentication authentication) {
-        // This would normally come from JWT token or SecurityContext
-        return 1L; // Placeholder - implement proper extraction from JWT
+        com.profilehub.security.UserDetailsImpl userDetails = (com.profilehub.security.UserDetailsImpl) authentication
+                .getPrincipal();
+        return userDetails.getId();
     }
 }

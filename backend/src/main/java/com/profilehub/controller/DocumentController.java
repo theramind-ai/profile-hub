@@ -30,7 +30,7 @@ public class DocumentController {
             @RequestParam(value = "isPublic", required = false) Boolean isPublic,
             Authentication authentication) {
         log.info("Uploading document: {}", file.getOriginalFilename());
-        
+
         Long userId = extractUserIdFromAuth(authentication);
         DocumentResponse documentResponse = documentService.uploadDocument(userId, file, description, isPublic);
         return ResponseEntity.status(HttpStatus.CREATED).body(documentResponse);
@@ -41,7 +41,7 @@ public class DocumentController {
             @PathVariable Long documentId,
             Authentication authentication) {
         log.info("Getting document: {}", documentId);
-        
+
         Long userId = extractUserIdFromAuth(authentication);
         DocumentResponse documentResponse = documentService.getDocument(documentId, userId);
         return ResponseEntity.ok(documentResponse);
@@ -50,7 +50,7 @@ public class DocumentController {
     @GetMapping("/user/documents")
     public ResponseEntity<List<DocumentResponse>> getUserDocuments(Authentication authentication) {
         log.info("Getting user documents");
-        
+
         Long userId = extractUserIdFromAuth(authentication);
         List<DocumentResponse> documents = documentService.getUserDocuments(userId);
         return ResponseEntity.ok(documents);
@@ -62,7 +62,7 @@ public class DocumentController {
             @RequestParam(defaultValue = "10") int size,
             Authentication authentication) {
         log.info("Getting user documents paginated");
-        
+
         Long userId = extractUserIdFromAuth(authentication);
         Pageable pageable = PageRequest.of(page, size);
         Page<DocumentResponse> documents = documentService.getUserDocumentsPaginated(userId, pageable);
@@ -74,7 +74,7 @@ public class DocumentController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         log.info("Getting public documents");
-        
+
         Pageable pageable = PageRequest.of(page, size);
         Page<DocumentResponse> documents = documentService.getPublicDocuments(pageable);
         return ResponseEntity.ok(documents);
@@ -86,7 +86,7 @@ public class DocumentController {
             @RequestBody Document documentDetails,
             Authentication authentication) {
         log.info("Updating document: {}", documentId);
-        
+
         Long userId = extractUserIdFromAuth(authentication);
         DocumentResponse documentResponse = documentService.updateDocument(documentId, userId, documentDetails);
         return ResponseEntity.ok(documentResponse);
@@ -97,14 +97,15 @@ public class DocumentController {
             @PathVariable Long documentId,
             Authentication authentication) {
         log.info("Deleting document: {}", documentId);
-        
+
         Long userId = extractUserIdFromAuth(authentication);
         documentService.deleteDocument(documentId, userId);
         return ResponseEntity.ok("Document deleted successfully");
     }
 
     private Long extractUserIdFromAuth(Authentication authentication) {
-        // This would normally come from JWT token or SecurityContext
-        return 1L; // Placeholder - implement proper extraction from JWT
+        com.profilehub.security.UserDetailsImpl userDetails = (com.profilehub.security.UserDetailsImpl) authentication
+                .getPrincipal();
+        return userDetails.getId();
     }
 }
