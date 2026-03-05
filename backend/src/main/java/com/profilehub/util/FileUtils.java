@@ -1,5 +1,6 @@
 package com.profilehub.util;
 
+import com.profilehub.exception.ApiException;
 import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.nio.file.Files;
@@ -61,13 +62,16 @@ public class FileUtils {
     public static byte[] readFile(String filePath) {
         try {
             Path path = Paths.get(filePath);
+            log.info("Attempting to read file at path: {}", path.toAbsolutePath());
             if (Files.exists(path)) {
                 return Files.readAllBytes(path);
             }
-            throw new RuntimeException("File not found: " + filePath);
+            throw new ApiException("File not found on server: " + filePath, 404);
+        } catch (ApiException e) {
+            throw e;
         } catch (Exception e) {
             log.error("Error reading file: {}", e.getMessage());
-            throw new RuntimeException("Failed to read file", e);
+            throw new ApiException("Error reading file", 500);
         }
     }
 }

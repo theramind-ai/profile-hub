@@ -16,6 +16,8 @@ import com.profilehub.service.DocumentService;
 import com.profilehub.repository.DocumentRepository;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Slf4j
@@ -122,8 +124,11 @@ public class DocumentController {
 
         byte[] content = documentService.downloadDocument(documentId, userId);
 
+        String encodedFileName = URLEncoder.encode(document.getFileName(), StandardCharsets.UTF_8).replace("+", "%20");
+
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getFileName() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + document.getFileName() + "\"; filename*=UTF-8''" + encodedFileName)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(content);
     }
