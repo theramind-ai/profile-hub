@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { DocumentService } from '../../services/document.service';
 
 @Component({
-    selector: 'app-document-list',
-    standalone: true,
-    imports: [CommonModule],
-    template: `
+  selector: 'app-document-list',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
     <div class="list-container">
       <div class="list-card">
         <h2>My Documents</h2>
@@ -48,7 +48,7 @@ import { DocumentService } from '../../services/document.service';
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
     .list-container {
       padding: 30px;
       background: #f5f5f5;
@@ -97,62 +97,63 @@ import { DocumentService } from '../../services/document.service';
   `]
 })
 export class DocumentListComponent implements OnInit {
-    documents: any[] = [];
-    loading = true;
-    errorMessage = '';
-    actionLoading: number | null = null;
+  documents: any[] = [];
+  loading = true;
+  errorMessage = '';
+  actionLoading: number | null = null;
 
-    constructor(private documentService: DocumentService) { }
+  constructor(private documentService: DocumentService) { }
 
-    ngOnInit(): void {
-        this.loadDocuments();
-    }
+  ngOnInit(): void {
+    this.loadDocuments();
+  }
 
-    loadDocuments(): void {
-        this.documentService.getUserDocuments().subscribe({
-            next: (docs) => {
-                this.documents = docs;
-                this.loading = false;
-            },
-            error: () => {
-                this.errorMessage = 'Failed to load documents.';
-                this.loading = false;
-            }
-        });
-    }
+  loadDocuments(): void {
+    this.documentService.getUserDocuments().subscribe({
+      next: (docs) => {
+        this.documents = docs;
+        this.loading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Failed to load documents.';
+        this.loading = false;
+      }
+    });
+  }
 
-    download(doc: any): void {
-        this.actionLoading = doc.id;
-        this.documentService.downloadDocument(doc.id).subscribe({
-            next: (blob) => {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = doc.fileName;
-                a.click();
-                window.URL.revokeObjectURL(url);
-                this.actionLoading = null;
-            },
-            error: () => {
-                this.errorMessage = 'Download failed.';
-                this.actionLoading = null;
-            }
-        });
-    }
+  download(doc: any): void {
+    this.actionLoading = doc.id;
+    this.documentService.downloadDocument(doc.id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = doc.fileName;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.actionLoading = null;
+      },
+      error: () => {
+        this.errorMessage = 'Download failed.';
+        this.actionLoading = null;
+      }
+    });
+  }
 
-    delete(id: number): void {
-        if (confirm('Are you sure?')) {
-            this.actionLoading = id;
-            this.documentService.deleteDocument(id).subscribe({
-                next: () => {
-                    this.loadDocuments();
-                    this.actionLoading = null;
-                },
-                error: () => {
-                    this.errorMessage = 'Delete failed.';
-                    this.actionLoading = null;
-                }
-            });
+  delete(id: number): void {
+    if (confirm('Are you sure?')) {
+      this.errorMessage = '';
+      this.actionLoading = id;
+      this.documentService.deleteDocument(id).subscribe({
+        next: () => {
+          this.loadDocuments();
+          this.actionLoading = null;
+        },
+        error: () => {
+          this.errorMessage = 'Delete failed.';
+          this.actionLoading = null;
         }
+      });
     }
+  }
 }

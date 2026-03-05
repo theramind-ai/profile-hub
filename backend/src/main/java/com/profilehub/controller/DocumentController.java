@@ -101,14 +101,14 @@ public class DocumentController {
     }
 
     @DeleteMapping("/{documentId}")
-    public ResponseEntity<String> deleteDocument(
+    public ResponseEntity<Void> deleteDocument(
             @PathVariable Long documentId,
             Authentication authentication) {
         log.info("Deleting document: {}", documentId);
 
         Long userId = extractUserIdFromAuth(authentication);
         documentService.deleteDocument(documentId, userId);
-        return ResponseEntity.ok("Document deleted successfully");
+        return ResponseEntity.noContent().build();
     }
 
     @SuppressWarnings("null")
